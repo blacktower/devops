@@ -116,7 +116,7 @@ function getWordPRess {
 
         #
         # Clean up
-        rm /var/www/html/index.html /var/www/html/readme.html /var/www/html/license.txt
+        # rm /var/www/html/index.html /var/www/html/readme.html /var/www/html/license.txt
         rm -rf wordpress latest.tar.gz
     else
         echo "Missing ${TEMPDIR} directory."

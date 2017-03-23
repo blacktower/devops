@@ -23,7 +23,7 @@ start () {
   #
   # INSTANCE CONNECTION NAME is replaced with connection string by initialize.sh script via sed
   echo "Starting ${DESC}"
-  nohup ${DAEMON} -instance=INSTANCE_CONNECTION_NAME=tcp:3306 > /dev/null 2>&1 &
+  nohup ${DAEMON} -instances=INSTANCE_CONNECTION_NAME=tcp:3306 > /dev/null 2>&1 &
   
 }
 
