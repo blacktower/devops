@@ -19,14 +19,14 @@
 # Date        Revised By  SIR #   Description of Change
 # --------    ----------  ------  ---------------------------------------------
 
-TEMP='/tmp'
+TEMP="/tmp"
 
 #
 # Update the distribution library to include required packages
 #
 function updateDistro {
 	# Edit /etc/apt/sources.list to include PHP7 packages
-	echo 'deb http://packages.dotdeb.org jessie all' | sudo tee --append /etc/apt/sources.list > /dev/null
+	echo "deb http://packages.dotdeb.org jessie all" | sudo tee --append /etc/apt/sources.list > /dev/null
 
 	# Fetch the repository key and install it.
 	wget https://www.dotdeb.org/dotdeb.gpg
@@ -62,9 +62,9 @@ function installUtilities {
 # Install any connectors and integrations
 #
 function installSQLProxy {
-    if [ -d ${TEMP} ]; then
+    if [ -d $TEMP ]; then
 
-        cd ${TEMP}
+        cd $TEMP || return
 
         # Install the Google SQL Proxy
         # Download the proxy
@@ -81,22 +81,22 @@ function installSQLProxy {
         # Add proxy to init states
         # - Downlaod the init script and update proxy connection string with meta set in compute engine instance
         # - Add init script to default run levels
-        curl -s https://raw.githubusercontent.com/blacktower/devops/master/debian/etc/init.d/cloud_sql_proxy.sh > cloud_sql_proxy.sh
-        SQLPROXY=`curl -s http://metadata.google.internal/computeMetadata/v1/instance/attributes/sqlproxy -H "Metadata-Flavor: Google"`
-        sed s/INSTANCE_CONNECTION_NAME/${SQLPROXY}/ cloud_sql_proxy.sh > cloud_sql_proxy.sh
+        curl -s https://raw.githubusercontent.com/blacktower/devops/master/debian/etc/init.d/cloud_sql_proxy.default > cloud_sql_proxy.default
+        SQLPROXY=$(curl -s http://metadata.google.internal/computeMetadata/v1/instance/attributes/sqlproxy -H "Metadata-Flavor: Google")
+        sed s/INSTANCE_CONNECTION_NAME/"$SQLPROXY" cloud_sql_proxy.default > cloud_sql_proxy.sh
 
         # Default run levels
         mv cloud_sql_proxy.sh /etc/init.d
         update-rc.d cloud_sql_proxy.sh defaults
     else
-        echo "Missing ${TEMP} directory."
+        echo "Missing $TEMP directory."
     fi
 }
 
 function getWordPRess {
-    if [ -d ${TEMP} ]; then
+    if [ -d $TEMP ]; then
 
-        cd ${TEMP}
+        cd $TEMP
 
         #
         # Download latest WordPress and deploy
@@ -115,7 +115,7 @@ function getWordPRess {
         # Clean up extra files
         sudo rm /var/www/html/index.html /var/www/html/readme.html /var/www/html/license.txt
     else
-        echo "Missing ${TEMP} directory."
+        echo "Missing $TEMP directory."
     fi
 }
 
