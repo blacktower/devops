@@ -51,6 +51,9 @@ function installAMP {
 	# http://www.jarrodoberto.com/articles/2011/11/enabling-mod-rewrite-on-ubuntu
 	# a2enmod is a script that enables the specified module within the apache2 configuration. It does this by creating symlinks within /etc/apache2/mods-enabled. Likewise, a2dismod disables a module by removing those symlinks.
 	a2enmod rewrite
+
+    # Restart apache to load the mysql modules for php
+    service apache2 reload
 }
 
 #
