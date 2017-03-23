@@ -26,14 +26,14 @@ TEMPDIR="/tmp"
 #
 function updateDistro {
 	# Edit /etc/apt/sources.list to include PHP7 packages
-	echo "deb http://packages.dotdeb.org jessie all" | sudo tee --append /etc/apt/sources.list > /dev/null
+	echo "deb http://packages.dotdeb.org jessie all" | tee --append /etc/apt/sources.list > /dev/null
 
 	# Fetch the repository key and install it.
 	wget https://www.dotdeb.org/dotdeb.gpg
-	sudo apt-key add dotdeb.gpg
+	apt-key add dotdeb.gpg
 
 	# Update global image
-	sudo apt-get update
+	apt-get update
 
     # Cleanup
     rm dotdeb.gpg
@@ -45,12 +45,12 @@ function updateDistro {
 function installAMP {
 	# Install the following packages:
 	# - Apache2.4, PHP 7.0, PHP MySQL libraries
-	sudo apt-get install -y apache2 php7.0 php7.0-curl php7.0-gd php7.0-mbstring php7.0-mysql php7.0-xml php7.0-zip
+	apt-get install -y apache2 php7.0 php7.0-curl php7.0-gd php7.0-mbstring php7.0-mysql php7.0-xml php7.0-zip
 
 	# Turn on mod_rewrite which is off by default
 	# http://www.jarrodoberto.com/articles/2011/11/enabling-mod-rewrite-on-ubuntu
 	# a2enmod is a script that enables the specified module within the apache2 configuration. It does this by creating symlinks within /etc/apache2/mods-enabled. Likewise, a2dismod disables a module by removing those symlinks.
-	sudo a2enmod rewrite
+	a2enmod rewrite
 }
 
 #
@@ -58,7 +58,7 @@ function installAMP {
 #
 function installUtilities {
 	# Install other utilities
-	sudo apt-get install -y zip unzip
+	apt-get install -y zip unzip
 }
 
 #
@@ -69,17 +69,12 @@ function installSQLProxy {
 
         cd ${TEMPDIR} || return
 
-        # Install the Google SQL Proxy
-        # Download the proxy
-        wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64
+        # Download and Install the Google SQL Proxy
+        wget -O cloud_sql_proxy https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64
 
-        # Rename the proxy to the standard file name
-        mv cloud_sql_proxy.linux.amd64 cloud_sql_proxy
-
-        # Make the proxy executable
-        cp cloud_sql_proxy /usr/sbin
-        chmod +x /usr/sbin/cloud_sql_proxy
-        chown root:root /usr/sbin/cloud_sql_proxy
+        # Make the proxy executable and move to system bin
+        chmod +x cloud_sql_proxy
+        mv cloud_sql_proxy /usr/sbin
         
         #
         # Add proxy to init states
@@ -87,14 +82,15 @@ function installSQLProxy {
         # - Add init script to default run levels
         curl -s https://raw.githubusercontent.com/blacktower/devops/master/debian/etc/init.d/cloud_sql_proxy.default > cloud_sql_proxy.default
         SQLPROXY=$(curl -s http://metadata.google.internal/computeMetadata/v1/instance/attributes/sqlproxy -H "Metadata-Flavor: Google")
-        sed s/INSTANCE_CONNECTION_NAME/"${SQLPROXY}" cloud_sql_proxy.default > cloud_sql_proxy.sh
+        sed s/INSTANCE_CONNECTION_NAME/"${SQLPROXY}"/ cloud_sql_proxy.default > cloud_sql_proxy.sh
 
         # Default run levels
-        mv cloud_sql_proxy.sh /etc/init.d
+        cp cloud_sql_proxy.sh /etc/init.d
+        chmod +x /etc/init.d/cloud_sql_proxy.sh
         update-rc.d cloud_sql_proxy.sh defaults
 
         # Cleanup
-        rm -rf cloud_sql_proxy cloud_sql_proxy.default cloud_sql_proxy.sh wordpress latest.tar.gz
+        rm -rf cloud_sql_proxy cloud_sql_proxy.default cloud_sql_proxy.sh
     else
         echo "Missing ${TEMPDIR} directory."
     fi
@@ -109,18 +105,19 @@ function getWordPRess {
         # Download latest WordPress and deploy
         wget https://wordpress.org/latest.tar.gz
         tar xvf latest.tar.gz
-        sudo cp -R wordpress/* /var/www/html
+        cp -R wordpress/* /var/www/html
 
         #
         # Set file permissions for web sever to work with Wordpress
-        sudo chmod 775 /var/www/html
-        sudo chown -R www-data:www-data /var/www/html
+        chmod 775 /var/www/html
+        chown -R www-data:www-data /var/www/html
         find /var/www/html -type d -exec sudo chmod 2775 {} \;
         find /var/www/html -type f -exec sudo chmod 0664 {} \;
 
         #
-        # Clean up extra files
-        sudo rm /var/www/html/index.html /var/www/html/readme.html /var/www/html/license.txt
+        # Clean up
+        rm /var/www/html/index.html /var/www/html/readme.html /var/www/html/license.txt
+        rm -rf wordpress latest.tar.gz
     else
         echo "Missing ${TEMPDIR} directory."
     fi
