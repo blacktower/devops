@@ -19,7 +19,7 @@
 # Date        Revised By  SIR #   Description of Change
 # --------    ----------  ------  ---------------------------------------------
 
-TEMP="/tmp"
+TEMPDIR="/tmp"
 
 #
 # Update the distribution library to include required packages
@@ -34,6 +34,9 @@ function updateDistro {
 
 	# Update global image
 	sudo apt-get update
+
+    # Cleanup
+    rm dotdeb.gpg
 }
 
 #
@@ -62,9 +65,9 @@ function installUtilities {
 # Install any connectors and integrations
 #
 function installSQLProxy {
-    if [ -d $TEMP ]; then
+    if [ -d $TEMPDIR ]; then
 
-        cd $TEMP || return
+        cd $TEMPDIR || return
 
         # Install the Google SQL Proxy
         # Download the proxy
@@ -74,8 +77,9 @@ function installSQLProxy {
         mv cloud_sql_proxy.linux.amd64 cloud_sql_proxy
 
         # Make the proxy executable
-        chmod +x cloud_sql_proxy
-        mv cloud_sql_proxy /usr/sbin
+        cp cloud_sql_proxy /usr/sbin
+        chmod +x /usr/sbin/cloud_sql_proxy
+        chown root:root /usr/sbin/cloud_sql_proxy
         
         #
         # Add proxy to init states
@@ -88,15 +92,18 @@ function installSQLProxy {
         # Default run levels
         mv cloud_sql_proxy.sh /etc/init.d
         update-rc.d cloud_sql_proxy.sh defaults
+
+        # Cleanup
+        rm -rf cloud_sql_proxy cloud_sql_proxy.default cloud_sql_proxy.sh wordpress latest.tar.gz
     else
-        echo "Missing $TEMP directory."
+        echo "Missing $TEMPDIR directory."
     fi
 }
 
 function getWordPRess {
-    if [ -d $TEMP ]; then
+    if [ -d $TEMPDIR ]; then
 
-        cd $TEMP
+        cd $TEMPDIR || return
 
         #
         # Download latest WordPress and deploy
@@ -115,7 +122,7 @@ function getWordPRess {
         # Clean up extra files
         sudo rm /var/www/html/index.html /var/www/html/readme.html /var/www/html/license.txt
     else
-        echo "Missing $TEMP directory."
+        echo "Missing $TEMPDIR directory."
     fi
 }
 
