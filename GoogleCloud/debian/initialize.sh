@@ -88,6 +88,7 @@ function installSQLProxy {
         cp cloud_sql_proxy.sh /etc/init.d
         chmod +x /etc/init.d/cloud_sql_proxy.sh
         update-rc.d cloud_sql_proxy.sh defaults
+        service cloud_sql_proxy start
 
         # Cleanup
         rm -rf cloud_sql_proxy cloud_sql_proxy.default cloud_sql_proxy.sh
