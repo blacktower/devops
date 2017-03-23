@@ -127,10 +127,10 @@ function getWordPRess {
     fi
 }
 
-echo "********* Start Time:" `date +%Y-%m-%d`
+echo "********* Start Time:" `date +%Y-%m-%d %T`
 updateDistro
 installAMP
 installUtilities
 installSQLProxy
 getWordPRess
-echo "********* End Time:" `date +%Y-%m-%d`
+echo "********* End Time:" `date +%Y-%m-%d %T`
