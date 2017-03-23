@@ -61,7 +61,7 @@ function installUtilities {
 #
 # Install any connectors and integrations
 #
-function installIntegrations {
+function installSQLProxy {
     if [ -d ${TEMP} ]; then
 
         cd ${TEMP}
@@ -77,8 +77,15 @@ function installIntegrations {
         chmod +x cloud_sql_proxy
         mv cloud_sql_proxy /usr/sbin
         
+        #
         # Add proxy to init states
-        wget https://github.com/blacktower/devops/debian/etc/init.d/cloud_sql_proxy.sh
+        # - Downlaod the init script and update proxy connection string with meta set in compute engine instance
+        # - Add init script to default run levels
+        curl -s https://raw.githubusercontent.com/blacktower/devops/master/debian/etc/init.d/cloud_sql_proxy.sh > cloud_sql_proxy.sh
+        SQLPROXY=`curl -s http://metadata.google.internal/computeMetadata/v1/instance/attributes/sqlproxy -H "Metadata-Flavor: Google"`
+        sed s/INSTANCE_CONNECTION_NAME/${SQLPROXY}/ cloud_sql_proxy.sh > cloud_sql_proxy.sh
+
+        # Default run levels
         mv cloud_sql_proxy.sh /etc/init.d
         update-rc.d cloud_sql_proxy.sh defaults
     else
@@ -115,5 +122,5 @@ function getWordPRess {
 updateDistro
 installAMP
 installUtilities
-installIntegrations
+installSQLProxy
 getWordPRess

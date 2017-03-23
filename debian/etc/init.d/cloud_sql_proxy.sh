@@ -18,13 +18,13 @@ DESC="Google Cloud SQL Proxy"
 CMD="cloud_sql_proxy"
 DAEMON="/usr/sbin/${CMD}"
 
-# Replace INSTANCE_ID with full proxy string
-INSTANCE=INSTANCE_ID
-
 start () {
 
+  #
+  # INSTANCE_CONNECTION_NAME is replaced with real connection string by initialize script via sed
+  #
   echo "Starting ${DESC}"
-  nohup ${CMD} ${INSTANCE} > /dev/null 2>&1 &
+  nohup ${CMD} INSTANCE_CONNECTION_NAME > /dev/null 2>&1 &
   
 }
 
