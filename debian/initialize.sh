@@ -65,9 +65,9 @@ function installUtilities {
 # Install any connectors and integrations
 #
 function installSQLProxy {
-    if [ -d $TEMPDIR ]; then
+    if [ -d ${TEMPDIR} ]; then
 
-        cd $TEMPDIR || return
+        cd ${TEMPDIR} || return
 
         # Install the Google SQL Proxy
         # Download the proxy
@@ -87,7 +87,7 @@ function installSQLProxy {
         # - Add init script to default run levels
         curl -s https://raw.githubusercontent.com/blacktower/devops/master/debian/etc/init.d/cloud_sql_proxy.default > cloud_sql_proxy.default
         SQLPROXY=$(curl -s http://metadata.google.internal/computeMetadata/v1/instance/attributes/sqlproxy -H "Metadata-Flavor: Google")
-        sed s/INSTANCE_CONNECTION_NAME/"$SQLPROXY" cloud_sql_proxy.default > cloud_sql_proxy.sh
+        sed s/INSTANCE_CONNECTION_NAME/"${SQLPROXY}" cloud_sql_proxy.default > cloud_sql_proxy.sh
 
         # Default run levels
         mv cloud_sql_proxy.sh /etc/init.d
@@ -96,14 +96,14 @@ function installSQLProxy {
         # Cleanup
         rm -rf cloud_sql_proxy cloud_sql_proxy.default cloud_sql_proxy.sh wordpress latest.tar.gz
     else
-        echo "Missing $TEMPDIR directory."
+        echo "Missing ${TEMPDIR} directory."
     fi
 }
 
 function getWordPRess {
-    if [ -d $TEMPDIR ]; then
+    if [ -d ${TEMPDIR} ]; then
 
-        cd $TEMPDIR || return
+        cd ${TEMPDIR} || return
 
         #
         # Download latest WordPress and deploy
@@ -113,8 +113,8 @@ function getWordPRess {
 
         #
         # Set file permissions for web sever to work with Wordpress
+        sudo chmod 775 /var/www/html
         sudo chown -R www-data:www-data /var/www/html
-        sudo chmod 775 /var/www
         find /var/www/html -type d -exec sudo chmod 2775 {} \;
         find /var/www/html -type f -exec sudo chmod 0664 {} \;
 
@@ -122,7 +122,7 @@ function getWordPRess {
         # Clean up extra files
         sudo rm /var/www/html/index.html /var/www/html/readme.html /var/www/html/license.txt
     else
-        echo "Missing $TEMPDIR directory."
+        echo "Missing ${TEMPDIR} directory."
     fi
 }
 

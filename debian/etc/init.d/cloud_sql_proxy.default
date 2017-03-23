@@ -24,7 +24,7 @@ start () {
   # INSTANCE_CONNECTION_NAME is replaced with real connection string by initialize script via sed
   #
   echo "Starting ${DESC}"
-  nohup ${CMD} INSTANCE_CONNECTION_NAME > /dev/null 2>&1 &
+  nohup ${DAEMON} INSTANCE_CONNECTION_NAME > /dev/null 2>&1 &
   
 }
 
