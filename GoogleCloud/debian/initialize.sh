@@ -80,7 +80,7 @@ function installSQLProxy {
         # Add proxy to init states
         # - Downlaod the init script and update proxy connection string with meta set in compute engine instance
         # - Add init script to default run levels
-        curl -s https://raw.githubusercontent.com/blacktower/devops/master/debian/etc/init.d/cloud_sql_proxy.default > cloud_sql_proxy.default
+        curl -s https://raw.githubusercontent.com/blacktower/devops/master/GoogleCloud/debian/etc/init.d/cloud_sql_proxy.default > cloud_sql_proxy.default
         SQLPROXY=$(curl -s http://metadata.google.internal/computeMetadata/v1/instance/attributes/sqlproxy -H "Metadata-Flavor: Google")
         sed s/INSTANCE_CONNECTION_NAME/"${SQLPROXY}"/ cloud_sql_proxy.default > cloud_sql_proxy.sh
 

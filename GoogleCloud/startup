@@ -1,0 +1,6 @@
+	
+#!/bin/sh
+cd /tmp
+wget https://raw.githubusercontent.com/blacktower/devops/master/GoogleCloud/debian/initialize.sh
+chmod +x initialize.sh
+./initialize.sh
