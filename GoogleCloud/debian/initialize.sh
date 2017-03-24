@@ -14,10 +14,6 @@
 #                - WordPress
 #
 # Usage:        $ initialize.sh
-#
-# History:
-# Date        Revised By  SIR #   Description of Change
-# --------    ----------  ------  ---------------------------------------------
 
 TEMPDIR="/tmp"
 
@@ -61,7 +57,7 @@ function installAMP {
 #
 function installUtilities {
 	# Install other utilities
-	apt-get install -y zip unzip
+	apt-get install -y zip unzip dos2unix
 }
 
 #
@@ -115,8 +111,8 @@ function getWordPRess {
         # Set file permissions for web sever to work with Wordpress
         chmod 775 /var/www/html
         chown -R www-data:www-data /var/www/html
-        find /var/www/html -type d -exec sudo chmod 2775 {} \;
-        find /var/www/html -type f -exec sudo chmod 0664 {} \;
+        find /var/www/html -type d -exec chmod 2775 {} \;
+        find /var/www/html -type f -exec chmod 0664 {} \;
 
         #
         # Clean up
