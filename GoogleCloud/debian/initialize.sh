@@ -123,10 +123,10 @@ function getWordPRess {
     fi
 }
 
-echo "********* Start Time:" `date +%Y-%m-%d %T`
+echo "********* Start Time:" $(date +"%Y-%m-%d %H:%M:%S")
 updateDistro
 installAMP
 installUtilities
 installSQLProxy
 getWordPRess
-echo "********* End Time:" `date +%Y-%m-%d %T`
+echo "********* End Time:" $(date +"%Y-%m-%d %H:%M:%S")
