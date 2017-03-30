@@ -57,7 +57,7 @@ function installAMP {
 #
 function installUtilities {
 	# Install other utilities
-	apt-get install -y zip unzip dos2unix
+	apt-get install -y zip unzip dos2unix mysql-client
 }
 
 #
