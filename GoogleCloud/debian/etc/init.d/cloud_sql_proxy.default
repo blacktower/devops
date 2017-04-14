@@ -15,7 +15,8 @@
 #
 
 DESC="Google Cloud SQL Proxy"
-CMD="cloud_sql_proxy"
+NAME="cloud_sql_proxy"
+CMD=${NAME}
 DAEMON="/usr/sbin/${CMD}"
 
 start () {
