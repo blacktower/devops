@@ -128,5 +128,7 @@ updateDistro
 installAMP
 installUtilities
 installSQLProxy
-getWordPRess
+# This does not seem to be helpful
+# getWordPRess
+echo "!!!!!!! REMBER TO FIX AllowOverride !!!!!!!! "
 echo "********* End Time:" $(date +"%Y-%m-%d %H:%M:%S")
