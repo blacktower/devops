@@ -84,7 +84,7 @@ function installSQLProxy {
         sed s/INSTANCE_CONNECTION_NAME/"${SQLPROXY}"/ cloud_sql_proxy.default > cloud_sql_proxy
 
         # Default run levels
-        cp cloud_sql_proxy.sh /etc/init.d
+        cp cloud_sql_proxy /etc/init.d
         chmod +x /etc/init.d/cloud_sql_proxy
         update-rc.d cloud_sql_proxy defaults
         service cloud_sql_proxy start
