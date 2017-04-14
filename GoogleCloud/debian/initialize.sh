@@ -81,12 +81,12 @@ function installSQLProxy {
         # - Add init script to default run levels
         curl -s https://raw.githubusercontent.com/blacktower/devops/master/GoogleCloud/debian/etc/init.d/cloud_sql_proxy.default > cloud_sql_proxy.default
         SQLPROXY=$(curl -s http://metadata.google.internal/computeMetadata/v1/instance/attributes/sqlproxy -H "Metadata-Flavor: Google")
-        sed s/INSTANCE_CONNECTION_NAME/"${SQLPROXY}"/ cloud_sql_proxy.default > cloud_sql_proxy.sh
+        sed s/INSTANCE_CONNECTION_NAME/"${SQLPROXY}"/ cloud_sql_proxy.default > cloud_sql_proxy
 
         # Default run levels
         cp cloud_sql_proxy.sh /etc/init.d
-        chmod +x /etc/init.d/cloud_sql_proxy.sh
-        update-rc.d cloud_sql_proxy.sh defaults
+        chmod +x /etc/init.d/cloud_sql_proxy
+        update-rc.d cloud_sql_proxy defaults
         service cloud_sql_proxy start
 
         # Cleanup
