@@ -2,15 +2,15 @@
 # Name:         initialize.sh
 #
 # Author:       Garrett Hunter - Blacktower, Inc.
-# Date:         01-March-2017
+# Date:         14-April-2017
 # 
-# Description:  Configure Debian linux to run WordPress
-#               References: http://unix.stackexchange.com/questions/252671/installing-php7-0-from-sid-on-jessie
+# Description:  Configure CentOS linux to run WordPress
+#               References: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/install-LAMP.html
+#               ** Must be run as root **
 #               Package Inventory:
 #                - Apache 2.4
 #                - PHP 7.0 and various mods
 #                - zip, unzip
-#                - Google SQL Cloud Proxy
 #                - WordPress
 #
 # Usage:        $ initialize.sh
@@ -21,18 +21,10 @@ TEMPDIR="/tmp"
 # Update the distribution library to include required packages
 #
 function updateDistro {
-	# Edit /etc/apt/sources.list to include PHP7 packages
-	echo "deb http://packages.dotdeb.org jessie all" | tee --append /etc/apt/sources.list > /dev/null
-
-	# Fetch the repository key and install it.
-	wget https://www.dotdeb.org/dotdeb.gpg
-	apt-key add dotdeb.gpg
-
 	# Update global image
-	apt-get update
+	yum update -y
 
     # Cleanup
-    rm dotdeb.gpg
 }
 
 #
@@ -41,15 +33,17 @@ function updateDistro {
 function installAMP {
 	# Install the following packages:
 	# - Apache2.4, PHP 7.0, PHP MySQL libraries
-	apt-get install -y apache2 php7.0 php7.0-curl php7.0-gd php7.0-mbstring php7.0-mysql php7.0-xml php7.0-zip
+	sudo yum install -y httpd24 php70 php70-mysqld php70-gd php70-mbstring php70-zip mysql56
 
-	# Turn on mod_rewrite which is off by default
-	# http://www.jarrodoberto.com/articles/2011/11/enabling-mod-rewrite-on-ubuntu
-	# a2enmod is a script that enables the specified module within the apache2 configuration. It does this by creating symlinks within /etc/apache2/mods-enabled. Likewise, a2dismod disables a module by removing those symlinks.
-	a2enmod rewrite
+	# Enable httpd network access and read / write access
+    # http://stackoverflow.com/questions/4078205/php-cant-connect-to-mysql-with-error-13-but-command-line-can
+    # http://stackoverflow.com/questions/32044160/google-cloud-sql-with-php
+    sudo setsebool -P httpd_can_network_connect=1
+    sudo chcon -t httpd_sys_rw_content_t html
 
-    # Restart apache to load the mysql modules for php
-    service apache2 reload
+    # Add Apache to system start and start Apache
+    sudo chkconfig httpd on
+    sudo service httpd start
 }
 
 #
@@ -57,7 +51,7 @@ function installAMP {
 #
 function installUtilities {
 	# Install other utilities
-	apt-get install -y zip unzip dos2unix mysql-client
+	sudo yum install -y zip unzip dos2unix
 }
 
 #
