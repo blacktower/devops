@@ -58,36 +58,9 @@ function installUtilities {
 # Install any connectors and integrations
 #
 function installSQLProxy {
-    if [ -d ${TEMPDIR} ]; then
 
-        cd ${TEMPDIR} || return
-
-        # Download and Install the Google SQL Proxy
-        wget -O cloud_sql_proxy https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64
-
-        # Make the proxy executable and move to system bin
-        chmod +x cloud_sql_proxy
-        mv cloud_sql_proxy /usr/sbin
-        
-        #
-        # Add proxy to init states
-        # - Downlaod the init script and update proxy connection string with meta set in compute engine instance
-        # - Add init script to default run levels
-        curl -s https://raw.githubusercontent.com/blacktower/devops/master/GoogleCloud/debian/etc/init.d/cloud_sql_proxy.default > cloud_sql_proxy.default
-        SQLPROXY=$(curl -s http://metadata.google.internal/computeMetadata/v1/instance/attributes/sqlproxy -H "Metadata-Flavor: Google")
-        sed s/INSTANCE_CONNECTION_NAME/"${SQLPROXY}"/ cloud_sql_proxy.default > cloud_sql_proxy
-
-        # Default run levels
-        cp cloud_sql_proxy /etc/init.d
-        chmod +x /etc/init.d/cloud_sql_proxy
-        update-rc.d cloud_sql_proxy defaults
-        service cloud_sql_proxy start
-
-        # Cleanup
-        rm -rf cloud_sql_proxy cloud_sql_proxy.default cloud_sql_proxy.sh
-    else
-        echo "Missing ${TEMPDIR} directory."
-    fi
+  # Nothing to do for centos at this time
+  
 }
 
 function getWordPRess {
