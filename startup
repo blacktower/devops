@@ -2,7 +2,9 @@
 cd /tmp || exit
 
 # TODO Implement OS logic to select the correct initialziation script
-#
+# if (centos) then
+# wget https://raw.githubusercontent.com/blacktower/devops/master/AmazonAWS/centos/initialize.sh
+# elseif (debian) then
 wget https://raw.githubusercontent.com/blacktower/devops/master/GoogleCloud/debian/initialize.sh
 chmod +x initialize.sh
 ./initialize.sh > initialize.log

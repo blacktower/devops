@@ -57,11 +57,11 @@ function installUtilities {
 #
 # Install any connectors and integrations
 #
-function installSQLProxy {
+#function installSQLProxy {
 
   # Nothing to do for centos at this time
   
-}
+#}
 
 function getWordPRess {
     if [ -d ${TEMPDIR} ]; then
@@ -76,8 +76,9 @@ function getWordPRess {
 
         #
         # Set file permissions for web sever to work with Wordpress
+        # TODO add a group create for the www user
         chmod 775 /var/www/html
-        chown -R www-data:www-data /var/www/html
+        chown -R apache:www-data /var/www/html
         find /var/www/html -type d -exec chmod 2775 {} \;
         find /var/www/html -type f -exec chmod 0664 {} \;
 
