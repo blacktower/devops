@@ -18,21 +18,23 @@
 TEMPDIR="/tmp"
 
 #
+# Install packages I may want to have before we get started
+#
+function installPrereqs {
+	apt-get install -y zip unzip dos2unix mysql-client memcached
+}
+
+#
 # Update the distribution library to include required packages
 #
 function updateDistro {
-	# Edit /etc/apt/sources.list to include PHP7 packages
-	echo "deb http://packages.dotdeb.org jessie all" | tee --append /etc/apt/sources.list > /dev/null
-
-	# Fetch the repository key and install it.
-	wget https://www.dotdeb.org/dotdeb.gpg
-	apt-key add dotdeb.gpg
+	# Edit /etc/apt/sources.list to include PHP7 packages (https://deb.sury.org/)
+    apt-get install -y apt-transport-https lsb-release ca-certificates
+    wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
+    echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list
 
 	# Update global image
 	apt-get update
-
-    # Cleanup
-    rm dotdeb.gpg
 }
 
 #
@@ -40,24 +42,35 @@ function updateDistro {
 #
 function installAMP {
 	# Install the following packages:
-	# - Apache2.4, PHP 7.0, PHP MySQL libraries
-	apt-get install -y apache2 php7.0 php7.0-curl php7.0-gd php7.0-mbstring php7.0-mysql php7.0-xml php7.0-zip
+	# - Apache2.4, PHP 7.x, PHP MySQL libraries
+	apt-get install -y apache2 php php-curl php-gd php-mbstring php-mysql php-xml php-zip
 
-	# Turn on mod_rewrite which is off by default
-	# http://www.jarrodoberto.com/articles/2011/11/enabling-mod-rewrite-on-ubuntu
-	# a2enmod is a script that enables the specified module within the apache2 configuration. It does this by creating symlinks within /etc/apache2/mods-enabled. Likewise, a2dismod disables a module by removing those symlinks.
-	a2enmod rewrite
+    # Update the apache2.conf file with our preconfigurations
+    wget -O /etc/apache2/apache2.conf https://raw.githubusercontent.com/blacktower/devops/master/Apache/apache2.conf
+
+    # Load and enamble our custom optimized conf file
+	# a2enconf is a script that enables the specified configuration within the apache2 configuration. 
+    # It does this by creating symlinks within /etc/apache2/conf-enabled. Likewise, a2disconf disables a configuration by removing those symlinks.
+    wget -O /etc/apache2/conf-available/optimized.conf https://raw.githubusercontent.com/blacktower/devops/master/Apache/optimized.conf
+    a2enconf optimized
+
+	# Turn on modules which are off by default
+	# a2enmod is a script that enables the specified module within the apache2 configuration. 
+    # It does this by creating symlinks within /etc/apache2/mods-enabled. Likewise, a2dismod disables a module by removing those symlinks.
+	a2enmod expires headers include rewrite
+    a2dismod -f autoindex
+
+    # Install Google's mod_pagespeed for Apache
+    # https://www.howtoforge.com/tutorial/speed-up-apache-with-mod_pagespeed-and-memcached-on-debian-8-jessie/
+    cd /tmp
+    wget https://dl-ssl.google.com/dl/linux/direct/mod-pagespeed-stable_current_amd64.deb 
+    dpkg -i mod-pagespeed-stable_current_amd64.deb
+
+    # must also configure the pagespeed.conf file to use memcache
+    # TODO....
 
     # Restart apache to load the mysql modules for php
     service apache2 reload
-}
-
-#
-# Install additional utilities
-#
-function installUtilities {
-	# Install other utilities
-	apt-get install -y zip unzip dos2unix mysql-client
 }
 
 #
@@ -128,11 +141,10 @@ if [[ $EUID -ne 0 ]]; then
    echo "This script must be run as root" 
    exit 1
 fi
+installPrereqs
 updateDistro
 installAMP
-installUtilities
 installSQLProxy
 # This does not seem to be helpful
 # getWordPRess
-echo "!!!!!!! REMBER TO FIX AllowOverride !!!!!!!! "
 echo "********* End Time:" $(date +"%Y-%m-%d %H:%M:%S")
