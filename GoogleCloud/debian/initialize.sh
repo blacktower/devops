@@ -1,19 +1,20 @@
 #!/bin/bash
+# ----------------------------------------------------------------------
 # Name:         initialize.sh
-#
 # Author:       Garrett Hunter - Blacktower, Inc.
 # Date:         01-March-2017
 # 
-# Description:  Configure Debian linux to run WordPress
-#               References: http://unix.stackexchange.com/questions/252671/installing-php7-0-from-sid-on-jessie
-#               Package Inventory:
-#                - Apache 2.4
-#                - PHP 7.0 and various mods
-#                - zip, unzip
-#                - Google SQL Cloud Proxy
-#                - WordPress
+# Configure a Debian 8 (Jessie) VM to run WordPress
+# References: http://unix.stackexchange.com/questions/252671/installing-php7-0-from-sid-on-jessie
+# Package Inventory:
+# - Apache 2.4
+# - PHP 7.0 and various mods
+# - zip, unzip
+# - Google SQL Cloud Proxy
+# - WordPress
 #
 # Usage:        $ initialize.sh
+# ----------------------------------------------------------------------
 
 TEMPDIR="/tmp"
 
@@ -21,7 +22,7 @@ TEMPDIR="/tmp"
 # Install packages I may want to have before we get started
 #
 function installPrereqs {
-	apt-get install -y zip unzip dos2unix mysql-client memcached
+	apt-get install -y zip unzip dos2unix
 }
 
 #
@@ -37,18 +38,17 @@ function updateDistro {
 	apt-get update
 }
 
-#
-# Install base PHP, Apache, MySQL libraries
-#
+# ######################################################################
+# Install base Apache, MySQL, and PHP packages
+# ######################################################################
 function installAMP {
-	# Install the following packages:
-	# - Apache2.4, PHP 7.x, PHP MySQL libraries
-	apt-get install -y apache2 php php-curl php-gd php-mbstring php-mysql php-xml php-zip
 
-    # Update the apache2.conf file with our preconfigurations
+	apt-get install -y apache2 memcached php php-curl php-gd php-mbstring php-mysql php-xml php-zip php-memcached mysql-client
+
+    # Overwrite the apache2.conf file with our preconfigurations
     wget -O /etc/apache2/apache2.conf https://raw.githubusercontent.com/blacktower/devops/master/Apache/apache2.conf
 
-    # Load and enamble our custom optimized conf file
+    # Load and enable our custom optimized conf file
 	# a2enconf is a script that enables the specified configuration within the apache2 configuration. 
     # It does this by creating symlinks within /etc/apache2/conf-enabled. Likewise, a2disconf disables a configuration by removing those symlinks.
     wget -O /etc/apache2/conf-available/optimized.conf https://raw.githubusercontent.com/blacktower/devops/master/Apache/optimized.conf
@@ -60,14 +60,16 @@ function installAMP {
 	a2enmod expires headers include rewrite
     a2dismod -f autoindex
 
-    # Install Google's mod_pagespeed for Apache
-    # https://www.howtoforge.com/tutorial/speed-up-apache-with-mod_pagespeed-and-memcached-on-debian-8-jessie/
+    # ---------------------------------------------------
+    # | Install Google's mod_pagespeed for Apache
+    # | https://www.howtoforge.com/tutorial/speed-up-apache-with-mod_pagespeed-and-memcached-on-debian-8-jessie/
+    # ---------------------------------------------------
     cd /tmp
     wget https://dl-ssl.google.com/dl/linux/direct/mod-pagespeed-stable_current_amd64.deb 
     dpkg -i mod-pagespeed-stable_current_amd64.deb
 
-    # must also configure the pagespeed.conf file to use memcache
-    # TODO....
+    # Configure Pagespeed to use memcache
+    sed -ie 's/# ModPagespeedMemcachedServers/ModPagespeedMemcachedServers/' /etc/apache2/mods-available/pagespeed.conf
 
     # Restart apache to load the mysql modules for php
     service apache2 reload
@@ -146,5 +148,5 @@ updateDistro
 installAMP
 installSQLProxy
 # This does not seem to be helpful
-# getWordPRess
+getWordPRess
 echo "********* End Time:" $(date +"%Y-%m-%d %H:%M:%S")
