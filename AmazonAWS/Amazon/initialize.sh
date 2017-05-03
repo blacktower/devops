@@ -4,7 +4,7 @@
 # Author:       Garrett Hunter - Blacktower, Inc.
 # Date:         14-April-2017
 # 
-# Description:  Configure CentOS linux to run WordPress
+# Description:  Configure Amazon linux to run WordPress
 #               References: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/install-LAMP.html
 #               ** Must be run as root **
 #               Package Inventory:
