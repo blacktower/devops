@@ -33,7 +33,7 @@ function updateDistro {
 function installAMP {
 	# Install the following packages:
 	# - Apache2.4, PHP 7.0, PHP MySQL libraries
-	sudo yum install -y httpd24 php70 php70-mysqld php70-gd php70-mbstring php70-zip mysql56
+	sudo yum install -y httpd24 mod24_security php70 php70-mysqld php70-gd php70-mbstring php70-zip mysql56
 
 	# Enable httpd network access and read / write access
     # http://stackoverflow.com/questions/4078205/php-cant-connect-to-mysql-with-error-13-but-command-line-can

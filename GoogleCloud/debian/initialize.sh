@@ -43,7 +43,7 @@ function updateDistro {
 # ######################################################################
 function installAMP {
 
-	apt-get install -y apache2 memcached php php-curl php-gd php-mbstring php-mysql php-xml php-zip php-memcached mysql-client
+	apt-get install -y apache2 modsecurity-crs memcached php php-curl php-gd php-mbstring php-mysql php-xml php-zip php-memcached mysql-client
 
     # Overwrite the apache2.conf file with our preconfigurations
     wget -O /etc/apache2/apache2.conf https://raw.githubusercontent.com/blacktower/devops/master/Apache/apache2.conf
