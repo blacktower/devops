@@ -1,12 +1,14 @@
 #!/bin/sh
+#
+# Usage: install.sh -o [debian|ubuntu] -p [google|aws]
+#
+
+OS=
+PROVIDER=
+
 cd /tmp || exit
 
-# TODO Implement OS logic to select the correct initialziation script
-# if (AmazonLinux) then
-# wget https://raw.githubusercontent.com/blacktower/devops/master/AmazonAWS/Amazon/initialize.sh
-# elseif (ubuntu) then
-# wget https://raw.githubusercontent.com/blacktower/devops/master/AmazonAWS/Ubuntu/initialize.sh
-# elseif (debian) then
-# wget https://raw.githubusercontent.com/blacktower/devops/master/GoogleCloud/debian/initialize.sh
-chmod +x initialize.sh
-./initialize.sh > initialize.log
+wget https://raw.githubusercontent.com/blacktower/devops/master/install.sh
+
+chmod +x install.sh
+./install.sh -o ${OS} -p ${PROVIDER} > install.log
