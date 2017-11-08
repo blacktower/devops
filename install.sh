@@ -46,13 +46,15 @@ TEMPDIR="/tmp"
 # Install packages I may want to have before we get started
 #
 function installPrereqs {
-	apt-get install -y zip unzip dos2unix 
+	MODS="zip unzip dos2unix"
     
     case "${PROVIDER}" in
         aws)
-            apt-get install -y awscli
+            MODS="${MODS} awscli"
         ;;
     esac
+
+	apt-get install -y ${MODS}
 }
 
 #
