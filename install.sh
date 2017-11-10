@@ -54,7 +54,7 @@ function installPrereqs {
         ;;
     esac
 
-	apt-get install -y ${MODS}
+	apt install -y ${MODS}
 }
 
 #
@@ -63,31 +63,29 @@ function installPrereqs {
 function updateDistro {
     case "${OS}" in
         debian)
-            # Edit /etc/apt/sources.list to include PHP7 packages (https://deb.sury.org/)
-            apt-get install -y apt-transport-https lsb-release ca-certificates
-            wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
-            echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list
+        ubuntu)
+            # Update global image
+	        apt update -y
         ;;
     esac
-    # Update global image
-	apt-get update -y
 }
 
 # ######################################################################
 # Install base Apache, MySQL, and PHP packages
 # ######################################################################
 function installAMP {
-    MODS="apache2 memcached php-memcached"
+    MODS="memcached"
+    APACHEMODS="apache2";
+    PHPMODS="php7.0 php7.0-curl php7.0-gd php7.0-mbstring php7.0-mysql php7.0-xml php7.0-zip php-memcached"
+    MYSQLMODS="mysql-client"
 
     case "${OS}" in
         debian)
-            MODS="${MODS} php php-curl php-gd php-mbstring php-mysql php-xml php-zip mysql-client"
-        ;;
         ubuntu)
-            MODS="${MODS} php7.0 php7.0-curl php7.0-gd php7.0-mbstring php7.0-mysql php7.0-xml php7.0-zip libapache2-mod-php7.0 mysql-client-5.7"
+            MODS="${MODS} ${APACHEMODS} ${PHPMODS} ${MYSQLMODS}"
         ;;
     esac
-	apt-get install -y ${MODS}
+	apt install -y ${MODS}
 
     # Overwrite the apache2.conf file with our preconfigurations
     wget -O /etc/apache2/apache2.conf https://raw.githubusercontent.com/blacktower/devops/master/Apache/apache2.conf
