@@ -118,6 +118,24 @@ function installAMP {
     service apache2 reload
 }
 
+# ######################################################################
+# Install Certbot for LetsEncrypt SSL
+# ######################################################################
+function installCertbot {
+
+    case "${OS}" in
+        ubuntu)
+            apt install -y software-properties-common
+            add-apt-repository ppa:certbot/certbot
+            apt update
+        ;;
+    esac    
+    apt install -y python-certbot-apache  
+
+    # Install cert:
+    # certbot --apache -d ${DOMAIN} -n
+}
+
 #
 # Install any connectors and integrations
 #
@@ -191,6 +209,7 @@ fi
 installPrereqs
 updateDistro
 installAMP
+installCertbot
 installSQLProxy
 # This does not seem to be helpful
 # getWordPRess
