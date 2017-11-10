@@ -81,10 +81,10 @@ function installAMP {
 
     case "${OS}" in
         debian)
-            MODS="${MODS} modsecurity-crs php php-curl php-gd php-mbstring php-mysql php-xml php-zip mysql-client"
+            MODS="${MODS} php php-curl php-gd php-mbstring php-mysql php-xml php-zip mysql-client"
         ;;
         ubuntu)
-            MODS="${MODS} php7.0 php7.0-curl php7.0-gd php7.0-mbstring php7.0-mysql php7.0-xml php7.0-zip libapache2-mod-php7.0 mysql-client-5.7 libapache2-modsecurity"
+            MODS="${MODS} php7.0 php7.0-curl php7.0-gd php7.0-mbstring php7.0-mysql php7.0-xml php7.0-zip libapache2-mod-php7.0 mysql-client-5.7"
         ;;
     esac
 	apt-get install -y ${MODS}
@@ -92,17 +92,18 @@ function installAMP {
     # Overwrite the apache2.conf file with our preconfigurations
     wget -O /etc/apache2/apache2.conf https://raw.githubusercontent.com/blacktower/devops/master/Apache/apache2.conf
 
-    # Load and enable our custom optimized conf file
+    # Load and enable additional optimized conf files
 	# a2enconf is a script that enables the specified configuration within the apache2 configuration. 
     # It does this by creating symlinks within /etc/apache2/conf-enabled. Likewise, a2disconf disables a configuration by removing those symlinks.
     wget -O /etc/apache2/conf-available/optimized.conf https://raw.githubusercontent.com/blacktower/devops/master/Apache/optimized.conf
-    a2enconf optimized
+    wget -O /etc/apache2/conf-available/security.conf https://raw.githubusercontent.com/blacktower/devops/master/Apache/security.conf
+    a2enconf optimized security
 
-	# Turn on modules which are off by default
-	# a2enmod is a script that enables the specified module within the apache2 configuration. 
-    # It does this by creating symlinks within /etc/apache2/mods-enabled. Likewise, a2dismod disables a module by removing those symlinks.
+	# Enable/disable modules which are off/on by default
+	# a2enmod/a2dismod are scripts that enable/disable the specified modules within the apache2 configuration. 
+    # They do this by creating/removing symlinks within /etc/apache2/mods-enabled.
 	a2enmod expires headers include rewrite
-    a2dismod -f autoindex
+    a2dismod -f autoindex status
 
     # ---------------------------------------------------
     # | Install Google's mod_pagespeed for Apache
