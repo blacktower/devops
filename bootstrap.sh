@@ -3,8 +3,12 @@
 # Usage: install.sh -o [debian|ubuntu] -p [google|aws]
 #
 
-OS=
-PROVIDER=
+# Currently supported OSs and Providers
+# OSS: debian, ubuntu
+# PROVIDERS: google, aws
+
+OS=''
+PROVIDER=''
 
 cd /tmp || exit
 
