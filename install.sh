@@ -65,8 +65,7 @@ function installPrereqs {
 #
 function updateDistro {
     case "${OS}" in
-        debian)
-        ubuntu)
+        debian|ubuntu)
             # Update global image
 	        apt update -y
         ;;
