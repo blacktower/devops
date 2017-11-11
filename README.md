@@ -8,11 +8,13 @@ Using the admin console:
    - Save the Instance connection name for the compute engine
    - Add the databae name 'wordpress'
 2. Create the Compute Engine
+   - Set Identity and API Access -> Access Scope = 'Allow full access to all Cloud APIs' 
+   - Enable HTTP and HTTPS access under Firewall
    - Copy contents of bootstrap.sh into Startup Script
    - Fill in the OS and PROVIDER variables
-   - Add the metadata field 'sqlproxy':
+   - Under Managment, add the following Metadata fields:
      - key = sqlproxy 
-     - value={Cloud SQL Instance connection name} saved from Step 2. Used by Google SQL Cloud proxy later
+     - value=<Cloud SQL Instance connection name> saved from Step 2, (used by Google SQL Cloud proxy later)
 
 ## Amazon EC2 and RDS
 Using the admin console:

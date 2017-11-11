@@ -126,14 +126,11 @@ function installCertbot {
     case "${OS}" in
         ubuntu)
             apt install -y software-properties-common
-            add-apt-repository ppa:certbot/certbot
+            add-apt-repository -y ppa:certbot/certbot
             apt update
         ;;
     esac    
     apt install -y python-certbot-apache  
-
-    # Install cert:
-    # certbot --apache -d ${DOMAIN} -n
 }
 
 #
