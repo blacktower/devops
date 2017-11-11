@@ -1,5 +1,7 @@
 # WordPress DevOps
-Teaching myself how to build a bootstrap for building WordPress infrastructure on multiple cloud platforms. Targeting Ubunto Xenial on AWS and Debian Jessie on Google
+Teaching myself how to create a bootstrap for loading linux packages required for a WordPress LAMP infrastructure on multiple cloud platforms. Targeting Ubunto 16 Xenial on AWS and Debian 9 Stretch on Google.
+
+Initial design is to have a minimal "bootstrap" script that would download and call the main package loading script. The package loader would also set Apache and PHP configurations.
 
 ## Google Cloud Compute and SQL
 Using the admin console:
