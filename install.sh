@@ -4,29 +4,21 @@
 # Author:       Garrett Hunter - Blacktower, Inc.
 # Date:         08-Nov-2017
 # 
-# Description:  Configure a linux instance with Apache 2.4 / PHP 7.0. / MySQL client / Certbot (Let's Encrypt)
-#               Supports Debian 9 on Google Cloud and Ubuntu 16 (Xeniel) on AWS
+# Description:  Configure an Ubuntu instance with Apache 2.4 / PHP 7.0. / MySQL client / Certbot (Let's Encrypt)
+#               Supports Ubuntu 16 (Xeniel) on AWS and Google Cloud
 #
 #               ** Must be run as root **
 #
 # -------------------------------------------------------------------------------
 
 # Currently supported OSs and Providers
-OSS=(debian ubuntu)
 PROVIDERS=(google aws)
 
-usage() { printf "Usage: $0 -o [debian|ubuntu] -p [google|aws]\n" 1>&2; exit 1; }
+usage() { printf "Usage: $0 -p [google|aws]\n" 1>&2; exit 1; }
 
 # Check options and quit if incorrect
 while getopts ":o:p:" opt; do
   case "${opt}" in
-    o)
-      for i in "${OSS[@]}"; do
-        if [[ ${OPTARG} == ${i} ]]; then
-          OS=${OPTARG}
-        fi
-      done
-    ;;
     p)
       for i in "${PROVIDERS[@]}"; do
         if [[ ${OPTARG} == ${i} ]]; then
@@ -37,7 +29,7 @@ while getopts ":o:p:" opt; do
   esac
 done
 
-if [ -z "${OS}" ] || [ -z "${PROVIDER}" ]; then
+if [ -z "${PROVIDER}" ]; then
     usage
     exit 1
 fi
@@ -64,12 +56,8 @@ function installPrereqs {
 # Update the distribution library to include required packages
 #
 function updateDistro {
-    case "${OS}" in
-        debian|ubuntu)
-            # Update global image
-	        apt update -y
-        ;;
-    esac
+    # Update global image
+    apt update -y
 }
 
 # ######################################################################
@@ -82,11 +70,8 @@ function installAMP {
     PHPMODS="php7.0 php7.0-curl php7.0-gd php7.0-mbstring php7.0-mysql php7.0-xml php7.0-zip php-memcached"
     MYSQLMODS="mysql-client"
 
-    case "${OS}" in
-        debian|ubuntu)
-            MODS="${MODS} ${APACHEMODS} ${PHPMODS} ${MYSQLMODS}"
-        ;;
-    esac
+    MODS="${MODS} ${APACHEMODS} ${PHPMODS} ${MYSQLMODS}"
+
 	apt install -y ${MODS}
 
     # Overwrite the apache2.conf file with our preconfigurations
@@ -125,13 +110,10 @@ function installAMP {
 # ######################################################################
 function installCertbot {
 
-    case "${OS}" in
-        ubuntu)
-            apt install -y software-properties-common
-            add-apt-repository -y ppa:certbot/certbot
-            apt update
-        ;;
-    esac    
+    apt install -y software-properties-common
+    add-apt-repository -y ppa:certbot/certbot
+    apt update
+
     apt install -y python-certbot-apache  
 }
 

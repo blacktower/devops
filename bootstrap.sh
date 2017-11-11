@@ -7,7 +7,7 @@
 # OSS: debian, ubuntu
 # PROVIDERS: google, aws
 
-OS=''
+OS='ubuntu'
 PROVIDER=''
 
 cd /tmp || exit
