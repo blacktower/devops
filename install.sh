@@ -4,9 +4,12 @@
 # Author:       Garrett Hunter - Blacktower, Inc.
 # Date:         08-Nov-2017
 # 
-# Description:  Configure a linux instance to run Apache/PHP/WordPress. Supports Debian 8 (Jessie) on Google Cloud and Ubuntu 16 (Xeniel) on AWS
+# Description:  Configure a linux instance with Apache 2.4 / PHP 7.0. / MySQL client / Certbot (Let's Encrypt)
+#               Supports Debian 9 on Google Cloud and Ubuntu 16 (Xeniel) on AWS
+#
 #               ** Must be run as root **
 #
+# -------------------------------------------------------------------------------
 
 # Currently supported OSs and Providers
 OSS=(debian ubuntu)
@@ -72,6 +75,7 @@ function updateDistro {
 
 # ######################################################################
 # Install base Apache, MySQL, and PHP packages
+#  - Includes specific optimizations
 # ######################################################################
 function installAMP {
     MODS="memcached"
@@ -137,9 +141,7 @@ function installCertbot {
 # Install any connectors and integrations
 #
 function installSQLProxy {
-  if [[ ${PROVIDER} == "google" && ${OS} == "debian" ]]; then
     if [ -d ${TEMPDIR} ]; then
-
         cd ${TEMPDIR} || return
 
         # Download and Install the Google SQL Proxy
@@ -153,7 +155,7 @@ function installSQLProxy {
         # Add proxy to init states
         # - Downlaod the init script and update proxy connection string with meta set in compute engine instance
         # - Add init script to default run levels
-        curl -s https://raw.githubusercontent.com/blacktower/devops/master/GoogleCloud/debian/etc/init.d/cloud_sql_proxy.default > cloud_sql_proxy.default
+        curl -s https://raw.githubusercontent.com/blacktower/devops/master/GoogleCloud/etc/init.d/cloud_sql_proxy.default > cloud_sql_proxy.default
         SQLPROXY=$(curl -s http://metadata.google.internal/computeMetadata/v1/instance/attributes/sqlproxy -H "Metadata-Flavor: Google")
         sed s/INSTANCE_CONNECTION_NAME/"${SQLPROXY}"/ cloud_sql_proxy.default > cloud_sql_proxy
 
@@ -168,34 +170,6 @@ function installSQLProxy {
     else
         echo "Missing ${TEMPDIR} directory."
     fi
-  fi
-}
-
-function getWordPRess {
-    if [ -d ${TEMPDIR} ]; then
-
-        cd ${TEMPDIR} || return
-
-        #
-        # Download latest WordPress and deploy
-        wget https://wordpress.org/latest.tar.gz
-        tar xvf latest.tar.gz
-        cp -R wordpress/* /var/www/html
-
-        #
-        # Set file permissions for web sever to work with Wordpress
-        chmod 775 /var/www/html
-        chown -R www-data:www-data /var/www/html
-        find /var/www/html -type d -exec chmod 2775 {} \;
-        find /var/www/html -type f -exec chmod 0664 {} \;
-
-        #
-        # Clean up
-        rm /var/www/html/index.html /var/www/html/readme.html /var/www/html/license.txt
-        rm -rf wordpress latest.tar.gz
-    else
-        echo "Missing ${TEMPDIR} directory."
-    fi
 }
 
 echo "********* Start Time:" $(date +"%Y-%m-%d %H:%M:%S")
@@ -203,11 +177,14 @@ if [[ $EUID -ne 0 ]]; then
    echo "This script must be run as root" 
    exit 1
 fi
-installPrereqs
 updateDistro
+installPrereqs
 installAMP
 installCertbot
-installSQLProxy
-# This does not seem to be helpful
-# getWordPRess
+
+case "${PROVIDER}" in
+    google)
+        installSQLProxy
+    ;;
+esac
 echo "********* End Time:" $(date +"%Y-%m-%d %H:%M:%S")
