@@ -83,8 +83,7 @@ function installAMP {
     MYSQLMODS="mysql-client"
 
     case "${OS}" in
-        debian)
-        ubuntu)
+        debian|ubuntu)
             MODS="${MODS} ${APACHEMODS} ${PHPMODS} ${MYSQLMODS}"
         ;;
     esac
