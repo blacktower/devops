@@ -58,6 +58,7 @@ function installPrereqs {
 function updateDistro {
     # Update global image
     apt update -y
+    apt upgrade -y
 }
 
 # ######################################################################
