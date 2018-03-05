@@ -112,6 +112,8 @@ function installCertbot {
 
     sudo apt-get install python-certbot-apache -t stretch-backports
 
+}
+
 #
 # Install any connectors and integrations
 #
