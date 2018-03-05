@@ -4,8 +4,7 @@
 # Author:       Garrett Hunter - Blacktower, Inc.
 # Date:         08-Nov-2017
 # 
-# Description:  Configure an Ubuntu instance with Apache 2.4 / PHP 7.0. / MySQL client / Certbot (Let's Encrypt)
-#               Supports Ubuntu 16 (Xeniel) on AWS and Google Cloud
+# Description:  Configure a Debian Stretch instance with Apache 2.4 / PHP 7.0. / MySQL client / Certbot (Let's Encrypt)
 #
 #               ** Must be run as root **
 #
@@ -111,12 +110,7 @@ function installAMP {
 # ######################################################################
 function installCertbot {
 
-    apt install -y software-properties-common
-    add-apt-repository -y ppa:certbot/certbot
-    apt update
-
-    apt install -y python-certbot-apache  
-}
+    sudo apt-get install python-certbot-apache -t stretch-backports
 
 #
 # Install any connectors and integrations
