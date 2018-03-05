@@ -110,7 +110,7 @@ function installAMP {
 # ######################################################################
 function installCertbot {
 
-    sudo apt-get install python-certbot-apache -t stretch-backports
+    sudo apt-get install -y python-certbot-apache -t stretch-backports
 
 }
 
